@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: spring-project
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: test-db
+
+service:
+  test-rest-server:
+    uri: http://gturnquist-quoters.cfapps.io/api/random
+management:
+  security:
+    enabled: false
+
+logging:
+  pattern:
+    console: "[%d{yyyy-MM-dd'T'HH:mm:ss,SSS}][thread=%thread][class=%C{5}:%L][sleuthTraceId=%X{X-B3-TraceId:-}]: %msg%n"
+  level:
+    org.springframework: error
+    org.mycompany: debug
+
+---
+spring:
+  profiles: integration_test
+  mongodb:
+    embedded:
+      version: 3.4.5

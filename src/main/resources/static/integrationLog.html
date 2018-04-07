@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            $.get("/integration-log",
+                  function (data) {
+                      printTable(data)
+                  });
+
+            var listTableHeaders = ['Time', 'Request', 'Body', 'Status', 'Response', 'Error'];
+
+            function printTable(data) {
+                var body = document.getElementsByTagName('body')[0];
+                var table = document.createElement('table');
+                table.style.width = '100%';
+                // table.setAttribute('border', '1');
+                var tableBody = document.createElement('tableBody');
+
+                addTableHeader(tableBody);
+
+                // data.forEach(function (entry) {
+                for(var i = 0; i < data.length; i++ ) {
+                    var entry = data[i];
+
+                    var tr = document.createElement('tr');
+
+                    var td = document.createElement('td');
+                    td.appendChild(document.createTextNode(new Date(entry.time).toString()));
+                    tr.appendChild(td);
+
+                    var td = buildRequestCell(entry.request, i);
+                    tr.appendChild(td);
+
+                    var td = document.createElement('td');
+                    td.appendChild(document.createTextNode(entry.request.requestBody));
+                    tr.appendChild(td);
+
+                    var td = document.createElement('td');
+                    td.appendChild(document.createTextNode(entry.response.statusCode));
+                    tr.appendChild(td);
+
+                    var td = document.createElement('td');
+                    td.appendChild(document.createTextNode(entry.response.responseBody));
+                    tr.appendChild(td);
+
+                    var td = document.createElement('td');
+                    td.appendChild(
+                        document.createTextNode(JSON.parse(entry.response.responseBody).exception));
+                    tr.appendChild(td);
+
+                    tableBody.appendChild(tr);
+                }
+                table.appendChild(tableBody);
+                body.appendChild(table);
+            }
+
+            function addTableHeader(tableBody) {
+                var tr = document.createElement('tr');
+
+                listTableHeaders.forEach(function (columnHead) {
+                    var th = document.createElement('th');
+                    th.appendChild(document.createTextNode(columnHead));
+                    tr.appendChild(th);
+                });
+
+                tableBody.appendChild(tr);
+
+            }
+
+            function buildRequestCell(request, index) {
+                var td = document.createElement('td');
+
+                td.appendChild(
+                    document.createTextNode(request.httpMethod + " " + getLocation(
+                        request.uri).pathname));
+
+                var requestHeaderSpan = document.createElement('span');
+                requestHeaderSpan.setAttribute('style', 'color:blue;cursor:pointer;');
+                requestHeaderSpan.setAttribute('onclick',
+                    "showPopup('Headers', 'log_head_" + index + "')");
+                var br = document.createElement('br');
+                requestHeaderSpan.appendChild(br);
+                requestHeaderSpan.appendChild(document.createTextNode('(headers)'));
+                td.appendChild(requestHeaderSpan);
+
+                var requestHeaderParagraph = document.createElement('p');
+                requestHeaderParagraph.setAttribute('id', 'log_head_' + index);
+                requestHeaderParagraph.setAttribute('style', 'display: none;');
+                requestHeaderParagraph.appendChild(document.createTextNode(JSON.stringify(request.httpHeaders, null, 2)));
+
+                td.appendChild(requestHeaderParagraph);
+
+                return td;
+            }
+
+            function getLocation(href) {
+                var l = document.createElement("a");
+                l.href = href;
+
+                return l;
+            }
+
+        });
+    </script>
+</head>
+
+<body>
+<div id="popupModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><span class="modal-close"
+                                        onclick="document.getElementById('popupModal').style.display = 'none';">×</span>
+            <h3 id="popupHeader"></h3></div>
+        <div class="modal-body"><p id="popupDescr"></p></div>
+    </div>
+</div>
+<script type="text/javascript">
+    function showPopup(title, contentID) {
+        document.getElementById('popupHeader').innerHTML = title;
+        var p = document.getElementById(contentID);
+        document.getElementById('popupDescr').innerHTML = p.innerHTML;
+        document.getElementById('popupModal').style.display = 'block';
+    }
+
+    window.onclick = function (event) {
+        var popupModal = document.getElementById('popupModal');
+        if (event.target == popupModal) {
+            popupModal.style.display = 'none';
+        }
+    }</script>
+</body>
+
+</html>
