@@ -1,0 +1,49 @@
+p {
+    display: none;
+}
+
+span {
+    color: blue;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    border-width: 0;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+tr {
+    border-color: #ccc;
+    border-style: solid;
+    border-width: 1px 0 1px 0;
+    border-spacing: 0;
+}
+
+td, th {
+    margin: 0;
+    padding: 4px 10px 4px 10px;
+    border-color: #666;
+    border-style: solid;
+    border-width: 0;
+    font-family: Consolas, monaco, monospace;
+    font-size: small;
+    text-align: left;
+}
+
+.entryLimitLabel {
+    position: relative;
+    float: right;
+}
+
+.entryLimitInput {
+    position: relative;
+    width: 5ch;
+    float: right;
+    text-align: right;
+}
+
+.errorMsg {
+    color: red;
+}
