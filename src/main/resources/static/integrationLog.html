@@ -12,8 +12,10 @@
                   function (data) {
                       var table = document.createElement('table');
                       table.setAttribute('id', 'table');
+
                       var tableBody = buildTableBody(data);
                       table.appendChild(tableBody);
+
                       var body = document.getElementsByTagName('body')[0];
                       body.appendChild(table);
                   });
@@ -36,21 +38,28 @@
         };
 
         function submitForm() {
+            clearErrorMessages();
+
             var from = $('#from').val();
             var to = $('#to').val();
 
             var fromTimestamp = !!new Date(from).getTime() ? new Date(from).getTime() : 0;
             var toTimestamp = !!new Date(to).getTime() ? new Date(to).getTime()
                                                        : new Date().getTime();
-
             if (fromTimestamp > toTimestamp) {
                 showError('integration_log',
                           '"From" cannot be more then "to"');
                 return;
             }
 
+            var limit = $('#entryLimit').val();
+            if (limit < 0) {
+                showError('entryLimit', 'Count cannot be less than zero');
+                return;
+            }
+
             var getUrl = "/integration-log?" + "interval=[" + fromTimestamp + ", " + toTimestamp
-                         + "]";
+                         + "]&limit=" + limit;
 
             $.get(getUrl,
                   function (data) {
@@ -58,15 +67,12 @@
 
                       var tableBody = buildTableBody(data);
                       $('#table').append(tableBody);
-                      // var table = buildTable(data);
-                      // // $('#table').load('integrationLog.html #table');
-                      // var body = document.getElementsByTagName('body')[0];
-                      // body.
                   });
         }
 
         function showError(field, errorMessage) {
             var errorSpan = document.createElement("span");
+            errorSpan.setAttribute('id', 'errorSpan');
             var errorMessage = document.createTextNode(errorMessage);
 
             errorSpan.appendChild(errorMessage);
@@ -79,11 +85,12 @@
             fieldLabel.appendChild(errorSpan);
         }
 
+        function clearErrorMessages() {
+            $('#errorSpan').empty();
+        }
+
         function buildTableBody(data) {
 
-            // var body = document.getElementsByTagName('body')[0];
-            // var table = document.createElement('table');
-            // table.setAttribute('id', 'table');
             var tableBody = document.createElement('tableBody');
 
             addTableHeader(tableBody);
@@ -130,8 +137,6 @@
 
                 tableBody.appendChild(tr);
             }
-            // table.appendChild(tableBody);
-            // body.appendChild(table);
 
             return tableBody;
         }
@@ -266,6 +271,9 @@
     -
     <input id="to" placeholder="to">
     <input id="view" type="submit" value="View">
+
+    <input id="entryLimit" value="30" class="entryLimitInput" onchange="submitForm()">
+    <lavel for="entryLimit" class="entryLimitLabel">count on page: </lavel>
 </form>
 <div id="popupModal" class="modal">
     <div class="modal-content">
@@ -370,6 +378,18 @@
         color: red;
         text-decoration: none;
         cursor: pointer;
+    }
+
+    .entryLimitLabel {
+        position: relative;
+        float: right;
+    }
+
+    .entryLimitInput {
+        position: relative;
+        width: 5ch;
+        float: right;
+        text-align: right;
     }
 
     .errorMsg {

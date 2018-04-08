@@ -32,12 +32,16 @@ public class IntegrationLogController {
         if (interval != null) {
             Long[] timeBounds = new ObjectMapper().readValue(interval, new ObjectMapper().getTypeFactory().constructArrayType(Long.class));
             List<IntegrationLogEntity> entries = myRepository.findByTimeBetween(timeBounds[0], timeBounds[1]);
+            entries = sortByDecreaseTime(entries);
+            limit = limit > entries.size() ? entries.size() : limit;
 
-            return new ResponseEntity<>(sortByDecreaseTime(entries), HttpStatus.OK);
+            return new ResponseEntity<>(entries.subList(0, limit), HttpStatus.OK);
         }
         List<IntegrationLogEntity> entries = myRepository.findAll();
+        entries = sortByDecreaseTime(entries);
+        limit = limit > entries.size() ? entries.size() : limit;
 
-        return new ResponseEntity<>(sortByDecreaseTime(entries), HttpStatus.OK);
+        return new ResponseEntity<>(entries.subList(0, limit), HttpStatus.OK);
     }
 
     private List<IntegrationLogEntity> sortByDecreaseTime(List<IntegrationLogEntity> logEntities) {
