@@ -12,7 +12,6 @@ import org.springframework.http.client.ClientHttpResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Date;
 
 public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
 
@@ -37,7 +36,7 @@ public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
         IntegrationLogEntity logEntity = IntegrationLogEntity.builder()
                 .request(request)
                 .response(response)
-                .time(new Date())
+                .time(System.currentTimeMillis())
                 .build();
 
         myRepository.save(logEntity);
