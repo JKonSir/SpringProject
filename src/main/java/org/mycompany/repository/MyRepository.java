@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+//@Repository
 public interface MyRepository extends MongoRepository<IntegrationLogEntity, String> {
 
     List<IntegrationLogEntity> findByTimeBetween(long from, long to);
