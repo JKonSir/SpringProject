@@ -6,7 +6,7 @@
                 docker { image 'maven:3.6.0-jdk-8-alpine' }
             }
             steps {
-                sh 'mvn --version'
+                sh 'mvn clean package'
              }
          }
      }
